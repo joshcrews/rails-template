@@ -1,0 +1,6 @@
+h1. Rails Template
+
+My personal Rails application template
+
+Devise, Cucumber, Boostrap CSS, Sengrid for sending email on Heroku, and lots of little personal things.
+
