@@ -5,7 +5,9 @@ def copy_file(file_path, destination_path)
   file destination_path, File.read(File.join(@file_templates, file_path))
 end
 
+run "rvm gemset create #{app_name}"
 create_file ".rvmrc", "rvm gemset use 1.9.2@#{app_name}"
+run "rvm gemset use #{app_name}"
 
 gem "airbrake"
 gem "devise"
@@ -31,7 +33,7 @@ gem("letter_opener", :group => "development")
 copy_file "mocha.rb", "features/support/mocha.rb"
 copy_file "web_steps.rb", "features/step_definitions/web_steps.rb"
 copy_file "paths.rb", "features/support/paths.rb"
-copy_file "web_steps.rb", "features/support/selectors.rb"
+copy_file "selectors.rb", "features/support/selectors.rb"
 copy_file "sample.jpg", "features/support/assets/sample.jpg"
 copy_file "bootstrap.sass", "app/assets/stylesheets/bootstrap.sass"
 
@@ -138,7 +140,7 @@ remove_file 'public/index.html'
 run 'cp config/database.yml config/database.example'
 run "echo 'config/database.yml' >> .gitignore"
 
-commit to git
+# commit to git
 git :init
 git :add => "."
 git :commit => "-a -m 'create initial application'"
