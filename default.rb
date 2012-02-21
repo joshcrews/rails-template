@@ -5,9 +5,10 @@ def copy_file(file_path, destination_path)
   file destination_path, File.read(File.join(@file_templates, file_path))
 end
 
+run "rvm use 1.9.3"
 run "rvm gemset create #{app_name}"
-create_file ".rvmrc", "rvm gemset use 1.9.2@#{app_name}"
-run "rvm gemset use #{app_name}"
+create_file ".rvmrc", "rvm use 1.9.3@#{app_name}"
+run "rvm use 1.9.3@#{app_name}"
 
 gem "airbrake"
 gem "devise"
@@ -33,7 +34,6 @@ gem("letter_opener", :group => "development")
 copy_file "mocha.rb", "features/support/mocha.rb"
 copy_file "web_steps.rb", "features/step_definitions/web_steps.rb"
 copy_file "paths.rb", "features/support/paths.rb"
-copy_file "selectors.rb", "features/support/selectors.rb"
 copy_file "sample.jpg", "features/support/assets/sample.jpg"
 copy_file "bootstrap.sass", "app/assets/stylesheets/bootstrap.sass"
 
@@ -76,12 +76,7 @@ generate "devise:views"
 
 rake "db:migrate"
 
-inject_into_file 'config/initializers/devise.rb', :after => "Devise.setup do |config|" do
-  <<-eos
-    
-    config.sign_out_via = :get
-  eos
-end
+gsub_file('config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = :get')
 
 generate 'cucumber:install --spork'
 generate "email_spec:steps"
