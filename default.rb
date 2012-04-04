@@ -11,7 +11,6 @@ create_file ".rvmrc", "rvm use 1.9.3@#{app_name}"
 run "rvm use 1.9.3@#{app_name}"
 
 gem "airbrake"
-gem "devise"
 
 gem("rspec-rails", :group => "test")
 gem("cucumber-rails", :group => "test")
@@ -25,9 +24,10 @@ gem("factory_girl", :group => "test")
 gem("email_spec", :group => "test")
 
 gem("pg", :group => "heroku")
+gem("thin", :group => "development")
 
 gem("sqlite3", :group => ["test", "development"])
-gem("pry", :group => ["test", "development"])
+gem("pry-rails", :group => ["test", "development"])
 
 gem("letter_opener", :group => "development")
 
@@ -70,13 +70,7 @@ inject_into_file 'config/environments/production.rb', :after => "config.active_s
   eos
 end
 
-generate "devise:install"
-generate "devise User"
-generate "devise:views"
-
 rake "db:migrate"
-
-gsub_file('config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = :get')
 
 generate 'cucumber:install --spork'
 generate "email_spec:steps"
@@ -103,26 +97,15 @@ end
 
 
 inject_into_file 'config/environments/development.rb', :after => "config.assets.debug = true" do
-  <<-eos
-    
-    config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-    config.action_mailer.delivery_method = :letter_opener
-    
+  <<-eos    
+  config.action_mailer.default_url_options = { :host => 'lvh.me:3000' }
+  config.action_mailer.delivery_method = :letter_opener
   eos
 end
 
-# rails console uses pry
-inject_into_file 'config/environments/development.rb', :after => "config.assets.debug = true" do
-  <<-eos
-    
-    silence_warnings do
-      begin
-        require 'pry'
-        IRB = Pry
-      rescue LoadError
-      end
-    end
-    
+inject_into_file 'config/environments/test.rb', :after => "config.active_support.deprecation = :stderr" do
+  <<-eos    
+  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   eos
 end
 
